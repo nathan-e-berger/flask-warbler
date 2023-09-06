@@ -4,8 +4,9 @@ from dotenv import load_dotenv
 from flask import Flask, render_template, request, flash, redirect, session, g
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
+from werkzeug.exceptions import Unauthorized
 
-from forms import UserAddForm, LoginForm, MessageForm
+from forms import UserAddForm, LoginForm, MessageForm, CSRFProtectForm
 from models import db, connect_db, User, Message
 
 load_dotenv()
@@ -48,7 +49,8 @@ def do_logout():
     """Log out user."""
 
     if CURR_USER_KEY in session:
-        del session[CURR_USER_KEY]
+        session.pop(CURR_USER_KEY, None)
+        flash(f"Laterrr")
 
 
 @app.route('/signup', methods=["GET", "POST"])
@@ -115,11 +117,14 @@ def login():
 def logout():
     """Handle logout of user and redirect to homepage."""
 
-    form = g.csrf_form
+    form = CSRFProtectForm()
 
-    # IMPLEMENT THIS AND FIX BUG
-    # DO NOT CHANGE METHOD ON ROUTE
+    if form.validate_on_submit():
+        do_logout()
+        return redirect("/")
 
+    else:
+        raise Unauthorized()
 
 ##############################################################################
 # General user routes:
@@ -320,7 +325,9 @@ def homepage():
                     .limit(100)
                     .all())
 
-        return render_template('home.html', messages=messages)
+        form = CSRFProtectForm()
+
+        return render_template('home.html', messages=messages, form=form)
 
     else:
         return render_template('home-anon.html')
