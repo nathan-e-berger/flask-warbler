@@ -34,6 +34,7 @@ def add_user_to_g():
 
     if CURR_USER_KEY in session:
         g.user = User.query.get(session[CURR_USER_KEY])
+        g.csrf_form = CSRFProtectForm()
 
     else:
         g.user = None
@@ -94,6 +95,9 @@ def signup():
 @app.route('/login', methods=["GET", "POST"])
 def login():
     """Handle user login and redirect to homepage on success."""
+    if g.user:
+        flash("Already logged in!", 'danger')
+        return redirect("/")
 
     form = LoginForm()
 
@@ -117,7 +121,7 @@ def login():
 def logout():
     """Handle logout of user and redirect to homepage."""
 
-    form = CSRFProtectForm()
+    form = g.csrf_form
 
     if form.validate_on_submit():
         do_logout()
@@ -135,7 +139,7 @@ def list_users():
 
     Can take a 'q' param in querystring to search by that username.
     """
-
+    form = g.csrf_form
     if not g.user:
         flash("Access unauthorized.", "danger")
         return redirect("/")
@@ -147,32 +151,36 @@ def list_users():
     else:
         users = User.query.filter(User.username.like(f"%{search}%")).all()
 
-    return render_template('users/index.html', users=users)
+    return render_template('users/index.html', users=users, form=form)
 
 
 @app.get('/users/<int:user_id>')
 def show_user(user_id):
     """Show user profile."""
 
+
     if not g.user:
         flash("Access unauthorized.", "danger")
         return redirect("/")
 
+    form = g.csrf_form
     user = User.query.get_or_404(user_id)
 
-    return render_template('users/show.html', user=user)
+    return render_template('users/show.html', user=user, form=form)
 
 
 @app.get('/users/<int:user_id>/following')
 def show_following(user_id):
     """Show list of people this user is following."""
 
+
     if not g.user:
         flash("Access unauthorized.", "danger")
         return redirect("/")
 
+    form = g.csrf_form
     user = User.query.get_or_404(user_id)
-    return render_template('users/following.html', user=user)
+    return render_template('users/following.html', user=user, form=form)
 
 
 @app.get('/users/<int:user_id>/followers')
