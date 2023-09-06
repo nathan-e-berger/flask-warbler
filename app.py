@@ -34,11 +34,18 @@ def add_user_to_g():
 
     if CURR_USER_KEY in session:
         g.user = User.query.get(session[CURR_USER_KEY])
-        g.csrf_form = CSRFProtectForm()
 
     else:
         g.user = None
 
+@app.before_request
+def add_form_to_g():
+    """If we're logged in, add csrf form to Flask global."""
+
+    if CURR_USER_KEY in session:
+        g.csrf_form = CSRFProtectForm()
+
+# TODO:is that check on line 45 correct?
 
 def do_login(user):
     """Log in user."""
@@ -121,9 +128,7 @@ def login():
 def logout():
     """Handle logout of user and redirect to homepage."""
 
-    form = g.csrf_form
-
-    if form.validate_on_submit():
+    if g.csrf_form.validate_on_submit():
         do_logout()
         return redirect("/")
 
@@ -139,7 +144,6 @@ def list_users():
 
     Can take a 'q' param in querystring to search by that username.
     """
-    form = g.csrf_form
     if not g.user:
         flash("Access unauthorized.", "danger")
         return redirect("/")
@@ -151,7 +155,7 @@ def list_users():
     else:
         users = User.query.filter(User.username.like(f"%{search}%")).all()
 
-    return render_template('users/index.html', users=users, form=form)
+    return render_template('users/index.html', users=users)
 
 
 @app.get('/users/<int:user_id>')
@@ -163,10 +167,9 @@ def show_user(user_id):
         flash("Access unauthorized.", "danger")
         return redirect("/")
 
-    form = g.csrf_form
     user = User.query.get_or_404(user_id)
 
-    return render_template('users/show.html', user=user, form=form)
+    return render_template('users/show.html', user=user)
 
 
 @app.get('/users/<int:user_id>/following')
@@ -178,9 +181,8 @@ def show_following(user_id):
         flash("Access unauthorized.", "danger")
         return redirect("/")
 
-    form = g.csrf_form
     user = User.query.get_or_404(user_id)
-    return render_template('users/following.html', user=user, form=form)
+    return render_template('users/following.html', user=user)
 
 
 @app.get('/users/<int:user_id>/followers')
@@ -286,7 +288,7 @@ def add_message():
 @app.get('/messages/<int:message_id>')
 def show_message(message_id):
     """Show a message."""
-    breakpoint()
+
     if not g.user:
         flash("Access unauthorized.", "danger")
         return redirect("/")
