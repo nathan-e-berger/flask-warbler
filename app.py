@@ -360,8 +360,7 @@ def homepage():
 
 
     if g.user:
-        followed_users = [follower.id for follower in g.user.following]
-        + [g.user.id]
+        followed_users = [follower.id for follower in g.user.following] + [g.user.id]
 
         messages = (Message
                     .query
