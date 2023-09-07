@@ -250,7 +250,6 @@ def profile():
         g.user.image_url=form.image_url.data
         g.user.header_image_url=form.header_image_url.data
         g.user.bio = form.bio.data
-        g.user.password = form.password.data
 
         user = User.authenticate(
             form.username.data,
@@ -258,6 +257,7 @@ def profile():
         )
 
         if user:
+            g.user.password = form.password.data
             db.session.commit()
             return redirect(f"/users/{g.user.id}")
 
