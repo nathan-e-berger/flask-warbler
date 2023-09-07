@@ -45,7 +45,7 @@ def add_form_to_g():
     if CURR_USER_KEY in session:
         g.csrf_form = CSRFProtectForm()
 
-# TODO:is that check on line 45 correct?
+# TODO:is that check on line 45 correct? ANSWER: In future leave out conditional
 
 def do_login(user):
     """Log in user."""
@@ -260,7 +260,7 @@ def profile():
             db.session.commit()
             return redirect(f"/users/{g.user.id}")
 
-    flash("Incorrect Username/Password", "danger")
+        flash("Incorrect Username/Password", "danger")
     return render_template('users/edit.html', form=form)
 
 
@@ -360,20 +360,17 @@ def homepage():
 
 
     if g.user:
-        followed_users = [follower.id for follower in g.user.following ]
+        followed_users = [follower.id for follower in g.user.following]
+        + [g.user.id]
 
         messages = (Message
                     .query
-                    .filter((Message.user_id.in_(followed_users)) | (Message.user_id==g.user.id))
+                    .filter(Message.user_id.in_(followed_users))
                     .order_by(Message.timestamp.desc())
                     .limit(100)
                     .all())
 
-
-
-        form = CSRFProtectForm()
-        print("xxxxxxxxxxx",messages)
-        return render_template('home.html', messages=messages, form=form)
+        return render_template('home.html', messages=messages)
 
     else:
         return render_template('home-anon.html')
