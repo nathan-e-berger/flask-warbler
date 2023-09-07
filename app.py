@@ -58,7 +58,7 @@ def do_logout():
 
     if CURR_USER_KEY in session:
         session.pop(CURR_USER_KEY, None)
-        flash(f"Laterrr")
+        flash(f"Goodbye")
 
 
 @app.route('/signup', methods=["GET", "POST"])
@@ -245,22 +245,22 @@ def profile():
     form = UserEditForm(obj=g.user)
 
     if form.validate_on_submit():
-        g.user.username=form.username.data
-        g.user.email=form.email.data
-        g.user.image_url=form.image_url.data
-        g.user.header_image_url=form.header_image_url.data
-        g.user.bio = form.bio.data
 
         user = User.authenticate(
-            form.username.data,
+            g.user.username,
             form.password.data
         )
 
         if user:
-            g.user.password = form.password.data
+            g.user.username=form.username.data
+            g.user.email=form.email.data
+            g.user.image_url=form.image_url.data
+            g.user.header_image_url=form.header_image_url.data
+            g.user.bio = form.bio.data
             db.session.commit()
             return redirect(f"/users/{g.user.id}")
 
+    flash("Incorrect Username/Password", "danger")
     return render_template('users/edit.html', form=form)
 
 
@@ -358,15 +358,21 @@ def homepage():
     - logged in: 100 most recent messages of self & followed_users
     """
 
+
     if g.user:
+        followed_users = [follower.id for follower in g.user.following ]
+
         messages = (Message
                     .query
+                    .filter((Message.user_id.in_(followed_users)) | (Message.user_id==g.user.id))
                     .order_by(Message.timestamp.desc())
                     .limit(100)
                     .all())
 
-        form = CSRFProtectForm()
 
+
+        form = CSRFProtectForm()
+        print("xxxxxxxxxxx",messages)
         return render_template('home.html', messages=messages, form=form)
 
     else:
