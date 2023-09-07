@@ -48,7 +48,12 @@
       <ul class="list-group" id="messages">
         {% for msg in messages %}
           <li class="list-group-item">
-            <a href="/messages/{{ msg.id }}" class="message-link"/>
+            <a href="/messages/{{ msg.id }}" class="message-link"></a>
+            {% if msg.id in g.user.favorites %}
+                          <span class="star">
+                            <i class="bi bi-star"></i>
+                          </span>
+                          {% endif %}
             <a href="/users/{{ msg.user.id }}">
               <img src="{{ msg.user.image_url }}" alt="" class="timeline-image">
             </a>

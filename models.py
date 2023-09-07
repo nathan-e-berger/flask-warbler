@@ -89,6 +89,8 @@ class User(db.Model):
 
     messages = db.relationship('Message', backref="user")
 
+    favorites = db.relationship('Favorite', backref="user")
+
     followers = db.relationship(
         "User",
         secondary="follows",
@@ -180,6 +182,24 @@ class Message(db.Model):
         db.Integer,
         db.ForeignKey('users.id', ondelete='CASCADE'),
         nullable=False,
+    )
+
+
+class Favorite(db.Model):
+    """Map users favorited messages to their instance"""
+
+    __tablename__ = "favorites"
+
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey("users.id"),
+        primary_key=True
+    )
+
+    message_id = db.Column(
+        db.Integer,
+        db.ForeignKey("messages.id"),
+        primary_key=True
     )
 
 
