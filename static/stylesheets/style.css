@@ -180,6 +180,7 @@ nav + .container {
   box-shadow: 0 1px 1px rgba(136, 153, 166, 0.15);
 }
 
+
 .timeline-image {
   border-radius: 48px;
   height: 48px;
@@ -203,6 +204,11 @@ nav + .container {
   background-size: cover;
   background-position: top center;
 }
+
+/* #header_image {
+  position: relative;
+  max-width:fit-content;
+} */
 
 .full-width {
   width: 100vw;

@@ -265,6 +265,7 @@ def profile():
 
 @app.post('/users/favorite/<int:message_id>')
 def favorite_message(message_id):
+    """doc string"""
 
     if not g.user:
         flash("Access unauthorized.", "danger")
@@ -284,6 +285,8 @@ def favorite_message(message_id):
         favorite = Favorite(user_id=g.user.id, message_id=message_id)
         g.user.favorites.append(favorite)
         db.session.commit()
+
+    # TODO: refactor, use ORM
 
     return redirect(f'/users/{g.user.id}/favorites')
 
