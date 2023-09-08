@@ -46,14 +46,24 @@
 
     <div class="col-lg-6 col-md-8 col-sm-12">
       <ul class="list-group" id="messages">
-        {% for msg in messages %}
-          <li class="list-group-item">
+
+      {% for msg in messages %}
+        <li class="list-group-item">
+        {% for favorite in g.user.favorites %}
+        <form method="POST" action="'/users/favorite/{{ msg.id }}'">
+          {{ g.csrf_form.hidden_tag() }}
+          <span class="star">
+          {% if msg.id == favorite.message_id %}
+                <button type="submit"><i class="bi bi-star-fill"></i></button>
+          {% else %}
+          <button type="submit"><i class="bi bi-star"></i></button>
+          {% endif %}
+          </span>
+        </form>
+        {% endfor %}
+
             <a href="/messages/{{ msg.id }}" class="message-link"></a>
-            {% if msg.id in g.user.favorites %}
-                          <span class="star">
-                            <i class="bi bi-star"></i>
-                          </span>
-                          {% endif %}
+
             <a href="/users/{{ msg.user.id }}">
               <img src="{{ msg.user.image_url }}" alt="" class="timeline-image">
             </a>

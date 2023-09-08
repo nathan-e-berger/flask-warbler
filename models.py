@@ -199,7 +199,6 @@ class Favorite(db.Model):
     message_id = db.Column(
         db.Integer,
         db.ForeignKey("messages.id"),
-        primary_key=True
     )
 
 

@@ -7,7 +7,7 @@ from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import Unauthorized
 
 from forms import UserAddForm, LoginForm, MessageForm, CSRFProtectForm, UserEditForm
-from models import db, connect_db, User, Message
+from models import db, connect_db, User, Message, Favorite
 
 load_dotenv()
 
@@ -262,6 +262,19 @@ def profile():
 
         flash("Incorrect Username/Password", "danger")
     return render_template('users/edit.html', form=form)
+
+@app.post('/users/favorite/<int:message_id>')
+def favorite_message(message_id):
+
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
+    favorite = Favorite(message_id)
+    g.user.favorites.append(favorite)
+    db.session.commit()
+
+    return redirect(f'/users/{g.user.id}/favorites')
 
 
 
