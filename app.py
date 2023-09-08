@@ -272,14 +272,17 @@ def favorite_message(message_id):
 
 
 
-    curr_favs = [favorite.message_id for favorite in g.user.favorites]
+
+
     if message_id in [favorite.message_id for favorite in g.user.favorites]:
-        g.user.favorites.remove(Favorite.query.get(user_id=g.user.id, message_id = message_id))
-        db.session.delete(Favorite.query.get(user_id=g.user.id, message_id = message_id))
-        flash("message unfavorited!")
-        redirect('/')
+        favo = Favorite.query.get_or_404((g.user.id, message_id))
+        g.user.favorites.remove(favo)
+        db.session.delete(favo)
+        db.session.commit()
+        flash("Favorite De-favorited!")
+        return redirect('/')
     elif message_id in [message.id for message in g.user.messages]:
-        flash("Can't like your own message!")
+        flash("Can't like your own message, IslandBoi!")
         return redirect('/')
     else:
         favorite = Favorite(user_id=g.user.id, message_id=message_id)
