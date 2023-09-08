@@ -46,6 +46,18 @@
               {{ message.timestamp.strftime('%d %B %Y') }}
             </span>
         </div>
+        <form method="POST" action="/users/favorite/{{ message.id }}">
+          {{ g.csrf_form.hidden_tag() }}
+          <span class="messages-like-bottom">
+            <button type="submit">
+              {% if message.favorite[0] in g.user.favorites %}
+                <i class="bi bi-star-fill"></i>
+              {% else %}
+                <i class="bi bi-star"></i>
+              {% endif %}
+            </button>
+          </span>
+       </form>
       </li>
     </ul>
   </div>

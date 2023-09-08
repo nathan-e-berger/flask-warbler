@@ -184,6 +184,8 @@ class Message(db.Model):
         nullable=False,
     )
 
+    favorite = db.relationship('Favorite', backref="message")
+
 
 class Favorite(db.Model):
     """Map users favorited messages to their instance"""

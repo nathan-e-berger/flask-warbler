@@ -270,10 +270,6 @@ def favorite_message(message_id):
         flash("Access unauthorized.", "danger")
         return redirect("/")
 
-
-
-
-
     if message_id in [favorite.message_id for favorite in g.user.favorites]:
         favo = Favorite.query.get_or_404((g.user.id, message_id))
         g.user.favorites.remove(favo)
@@ -290,6 +286,17 @@ def favorite_message(message_id):
         db.session.commit()
 
     return redirect(f'/users/{g.user.id}/favorites')
+
+@app.get('/users/<int:user_id>/favorites')
+def show_favorites(user_id):
+    """Show list of favorites of this user."""
+
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
+    user = User.query.get_or_404(user_id)
+    return render_template('users/user_favorites.html', user=user)
 
 
 

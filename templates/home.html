@@ -63,9 +63,9 @@
               {{ g.csrf_form.hidden_tag() }}
               <span class="messages-like-bottom">
                 <button type="submit">
-                  {% if g.user.favorites | selectattr("message_id", "none") %}
+                  {% if msg.favorite[0] in g.user.favorites %}
                     <i class="bi bi-star-fill"></i>
-                    {% else %}
+                  {% else %}
                     <i class="bi bi-star"></i>
                   {% endif %}
                 </button>
