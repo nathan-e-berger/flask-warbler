@@ -1,7 +1,11 @@
 {% extends 'users/detail.html' %}
 {% block user_details %}
-{% for favorite in g.user.favorites %}
 <div class="message-area">
+    <ul class="list-group" id="messages">
+
+  {% for favorite in user.favorites %}
+      <li class="list-group-item">
+
           <div class="message-heading">
             <a href="/users/{{ favorite.message.user.id }}">
               @{{ favorite.message.user.username }}
@@ -25,19 +29,19 @@
           <span class="text-muted">
               {{ favorite.message.timestamp.strftime('%d %B %Y') }}
             </span>
-        </div>
-        <form method="POST" action="/users/favorite/{{ favorite.message.id }}">
-          {{ g.csrf_form.hidden_tag() }}
-          <span class="messages-like-bottom">
-            <button type="submit">
-                <i class="bi bi-star-fill"></i>
-            </button>
-          </span>
-       </form>
+            <form method="POST" action="/users/favorite/{{ favorite.message.id }}">
+              {{ g.csrf_form.hidden_tag() }}
+              <span class="messages-like-bottom">
+                <button type="submit">
+                    <i class="bi bi-star-fill"></i>
+                </button>
+              </span>
+           </form>
+
       </li>
+      {% endfor %}
     </ul>
   </div>
-</div>
-{% endfor %}
+
 
 {% endblock %}

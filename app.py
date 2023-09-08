@@ -276,10 +276,10 @@ def favorite_message(message_id):
         db.session.delete(favo)
         db.session.commit()
         flash("Favorite De-favorited!")
-        return redirect('/')
+        return redirect(f'/users/{g.user.id}/favorites')
     elif message_id in [message.id for message in g.user.messages]:
         flash("Can't like your own message, IslandBoi!")
-        return redirect('/')
+        return redirect(f'/users/{g.user.id}/favorites')
     else:
         favorite = Favorite(user_id=g.user.id, message_id=message_id)
         g.user.favorites.append(favorite)
