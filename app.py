@@ -270,9 +270,21 @@ def favorite_message(message_id):
         flash("Access unauthorized.", "danger")
         return redirect("/")
 
-    favorite = Favorite(message_id)
-    g.user.favorites.append(favorite)
-    db.session.commit()
+
+
+    curr_favs = [favorite.message_id for favorite in g.user.favorites]
+    if message_id in [favorite.message_id for favorite in g.user.favorites]:
+        g.user.favorites.remove(Favorite.query.get(user_id=g.user.id, message_id = message_id))
+        db.session.delete(Favorite.query.get(user_id=g.user.id, message_id = message_id))
+        flash("message unfavorited!")
+        redirect('/')
+    elif message_id in [message.id for message in g.user.messages]:
+        flash("Can't like your own message!")
+        return redirect('/')
+    else:
+        favorite = Favorite(user_id=g.user.id, message_id=message_id)
+        g.user.favorites.append(favorite)
+        db.session.commit()
 
     return redirect(f'/users/{g.user.id}/favorites')
 

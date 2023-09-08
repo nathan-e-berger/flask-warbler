@@ -49,19 +49,6 @@
 
       {% for msg in messages %}
         <li class="list-group-item">
-        {% for favorite in g.user.favorites %}
-        <form method="POST" action="'/users/favorite/{{ msg.id }}'">
-          {{ g.csrf_form.hidden_tag() }}
-          <span class="star">
-          {% if msg.id == favorite.message_id %}
-                <button type="submit"><i class="bi bi-star-fill"></i></button>
-          {% else %}
-          <button type="submit"><i class="bi bi-star"></i></button>
-          {% endif %}
-          </span>
-        </form>
-        {% endfor %}
-
             <a href="/messages/{{ msg.id }}" class="message-link"></a>
 
             <a href="/users/{{ msg.user.id }}">
@@ -72,6 +59,14 @@
               <span class="text-muted">{{ msg.timestamp.strftime('%d %B %Y') }}</span>
               <p>{{ msg.text }}</p>
             </div>
+            <form method="POST" action="/users/favorite/{{ msg.id }}">
+              {{ g.csrf_form.hidden_tag() }}
+              <span class="messages-like-bottom">
+                <button type="submit">
+                    <i class="bi bi-star"></i>
+                </button>
+              </span>
+           </form>
           </li>
         {% endfor %}
       </ul>
