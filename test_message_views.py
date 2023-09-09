@@ -55,6 +55,9 @@ class MessageBaseViewTestCase(TestCase):
 
         self.client = app.test_client()
 
+    def tearDown(self):
+        """Clean up fouled transactions"""
+        db.session.rollback()
 
 class MessageAddViewTestCase(MessageBaseViewTestCase):
     def test_add_message(self):
@@ -71,3 +74,20 @@ class MessageAddViewTestCase(MessageBaseViewTestCase):
             self.assertEqual(resp.status_code, 302)
 
             Message.query.filter_by(text="Hello").one()
+
+    def test_show_message(self):
+        """test show a message"""
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = self.u1_id
+
+            resp = c.get(f'/messages/{self.m1_id}')
+            self.assertEqual(resp.status_code, 200)
+            print("XXXXXXXXresp.data=", resp)
+            self.assertIn('message-heading"', str(resp.data))
+
+
+
+
+
+
