@@ -83,8 +83,19 @@ class MessageAddViewTestCase(MessageBaseViewTestCase):
 
             resp = c.get(f'/messages/{self.m1_id}')
             self.assertEqual(resp.status_code, 200)
-            print("XXXXXXXXresp.data=", resp)
             self.assertIn('message-heading"', str(resp.data))
+
+    def test_delete_message(self):
+        """teste deleting a message"""
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = self.u1_id
+
+
+            resp = c.post(f'/messages/{self.m1_id}/delete', follow_redirects=True)
+            self.assertEqual(resp.status_code, 200)
+
+            self.assertEqual(Message.query.count(), 0)
 
 
 
